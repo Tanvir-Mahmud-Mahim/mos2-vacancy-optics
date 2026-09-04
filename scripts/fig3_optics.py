@@ -71,10 +71,10 @@ def main():
                    linewidths=0.3)
     cb = fig.colorbar(sc, ax=c, pad=0.02, fraction=0.05)
     cb.set_label('vacancies', fontsize=7.5); cb.ax.tick_params(labelsize=7)
-    good = ya > 1
-    if good.sum() > 2:
-        rr = np.corrcoef(xi[good], ya[good])[0, 1]
-        c.text(0.05, 0.92, f'$r={rr:.2f}$', transform=c.transAxes, fontsize=8)
+    # correlation over ALL configurations, identical to gen_numbers.py, so
+    # the figure and the text always quote the same value
+    rr = np.corrcoef(xi, ya)[0, 1]
+    c.text(0.05, 0.92, f'$r={rr:.2f}$', transform=c.transAxes, fontsize=8)
     c.text(0.05, 0.80, 'same count,\ndark or bright', transform=c.transAxes,
            fontsize=7, color='0.3')
     c.set_xlabel('in-gap states per $k$-point')
