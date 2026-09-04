@@ -1,8 +1,8 @@
 """Evaluate trained models on held-out structures: matrix and eigenvalue errors."""
 import os, sys, glob, pickle, json
 import numpy as np
-from scipy.linalg import eigh
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+from mos2hamop.eigsolve import gen_eigh
 from mos2hamop.blocks import realspace_matrices, orbital_offsets
 from mos2hamop.mlmodel import BlockModel
 from mos2hamop.reference import DistanceReference
@@ -51,7 +51,9 @@ for fn in sorted(glob.glob(os.path.join(root, 'test', '*.npz'))):
     for ik, kfrac in enumerate(d['kpts']):
         kcart = kfrac @ icell
         H, S, _, _ = bloch_matrices(flat, nao, kcart, cell)
-        w = eigh(H, S, eigvals_only=True)
+        # canonical orthogonalization: the learned overlap can be mildly
+        # non-positive-definite in the near-null overcomplete directions
+        w = gen_eigh(H, S, thresh=1e-4, eigvals_only=True)
         ev_dft = d['eigenvalues'][ik]
         n = len(ev_dft)
         errs.append(np.abs(w[:n] - ev_dft))
