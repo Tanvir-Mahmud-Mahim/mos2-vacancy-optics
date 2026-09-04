@@ -1,7 +1,8 @@
 # mos2-vacancy-optics
 
-Open pipeline for the paper **"Optical brightness of sulfur vacancies
-decouples from their count in monolayer MoS2."**
+Open pipeline for the paper **"Learning the quantum Hamiltonian of
+defective monolayer MoS2 reveals collective vacancy brightness decoupled
+from defect count."**
 
 Sulfur vacancies are the dominant point defect in monolayer MoS2. This
 code builds the density-functional Hamiltonian of vacancy-disordered
@@ -15,11 +16,16 @@ magnitude between configurations, from optically dark to bright, while the
 number of mid-gap states barely changes. The brightness is set by the
 defect wavefunction character, not the state count, so optics is a
 selective rather than a counting probe of the vacancies. A dilute isolated
-divacancy is dark, so brightness requires an overlapping defect band. The
-code also trains a machine-learned Hamiltonian that reproduces the
-reference Hamiltonian at the matrix-element level, benchmarked against a
-conventional two-center tight-binding model, as the route to carrying the
-read-out to device scale.
+divacancy is dark: brightness requires the vacancy wavefunctions to
+hybridize into an overlapping defect band, a collective quantum property
+of the ensemble. The code also trains a machine-learned Hamiltonian that
+reproduces the reference Hamiltonian at the matrix-element level,
+benchmarked against a conventional two-center tight-binding model, and
+demonstrates its spectral read-out: on zone-center-sampled 5x5 cells,
+whose periodic torus lies entirely inside the learning range, the fully
+learned H and S predict the gaps of held-out disordered structures to
+73 meV on average and reproduce their sub-gap brightness ordering from
+geometry alone.
 
 ## What is here
 
@@ -68,12 +74,21 @@ python scripts/train_models.py
 python scripts/ml_validation.py
 python scripts/ml_ablation.py
 
-# 5. figures and numbers
+# 5. spectral read-out on zone-center-sampled 5x5 cells
+python scripts/gen_gamma55.py train 0 16
+python scripts/gen_gamma55.py test 0 5
+python scripts/build_samples.py train55
+python scripts/build_samples.py test55
+python scripts/spectral_validation.py
+python scripts/hybridization_split.py
+
+# 6. figures and numbers
 python scripts/fig1_concept.py
 python scripts/fig2_ml.py
 python scripts/fig_ablation.py
 python scripts/fig3_optics.py
 python scripts/fig4_coupling.py
+python scripts/fig5_spectral.py
 python scripts/gen_numbers.py
 python scripts/gen_ablation_table.py
 ```
