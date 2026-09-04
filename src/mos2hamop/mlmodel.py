@@ -17,6 +17,21 @@ from .rotations import atom_rotation
 BLOCK_TYPES = [('onsite', 42, 42), ('onsite', 16, 16),
                ('pair', 42, 42), ('pair', 42, 16), ('pair', 16, 16)]
 
+# Physics-informed descriptor selection. The block ablation (ml_ablation.py)
+# shows that the onsite blocks, which carry the environment-dependent defect
+# potential, need the full equivariant environment descriptor, whereas the
+# pair (hopping) blocks are governed by the two-center geometry and are
+# reproduced from the frame-invariant displacement scalars alone. Using each
+# ingredient where the physics demands it gives the lowest held-out error and
+# avoids overfitting the many pair blocks with the high-dimensional cloud.
+SCALAR_COLS = 4          # [dist, dx, dz, dz*dz]: the two-center displacement
+
+
+def select_features(kind, X):
+    """Full environment descriptor for onsite blocks; two-center scalars for
+    pair (hopping) blocks."""
+    return X if kind == 'onsite' else X[:, :SCALAR_COLS]
+
 
 def type_key(kind, Zi, Zj):
     if kind == 'onsite':

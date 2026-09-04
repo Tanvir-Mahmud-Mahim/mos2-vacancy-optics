@@ -12,7 +12,9 @@ sigma_xx(omega) is reported in units of sigma_mono = e^2 / (4 hbar),
 the universal sheet conductivity scale, per MoS2 layer.
 """
 import numpy as np
-from scipy.linalg import eigh
+from scipy.linalg import eigh, LinAlgError
+
+from .eigsolve import gen_eigh
 
 HBAR = 6.582119569e-16  # eV s
 KB = 8.617333e-5        # eV / K
@@ -57,7 +59,13 @@ def sigma_xx(blocks_R, nao, kpts_cart, wk, area, omega, mu, T=300.0,
     e_all = []
     for kpt, w in zip(kpts_cart, wk):
         H, S, dHx, dSx = bloch_matrices(blocks_R, nao, kpt, None)
-        e, c = eigh(H, S)
+        try:
+            e, c = eigh(H, S)
+        except LinAlgError:
+            # reconstructed/interpolated S can be mildly non-positive-definite;
+            # fall back to canonical orthogonalization (drops the near-null
+            # overcomplete directions) so the optics stays well defined
+            e, c = gen_eigh(H, S, thresh=1e-4, eigvals_only=False)
         e_all.append(e)
         f = 1.0 / (1.0 + np.exp(np.clip((e - mu) / (KB * T), -60, 60)))
         # velocity matrix (eV*A units before dividing by hbar)

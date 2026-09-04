@@ -12,7 +12,7 @@ import numpy as np
 
 from .blocks import NAO
 from .features import pair_descriptor, frame_angle
-from .mlmodel import type_key, rotate_out_of_frame
+from .mlmodel import type_key, rotate_out_of_frame, select_features
 
 RCUT = 11.0
 
@@ -79,8 +79,9 @@ def predict_blocks(positions, numbers, cell, images, models, kgrid_env,
             X.append(pair_descriptor(s, positions, numbers, cell, kgrid_env))
         X = np.array(X, dtype=np.float32)
         mH, mS = models[key]
-        Hp = mH.predict(X)
-        Sp = mS.predict(X)
+        Xf = select_features(key[0], X)
+        Hp = mH.predict(Xf)
+        Sp = mS.predict(Xf)
         if refs is not None and key in refs:
             rH, rS = refs[key]
             Hp = Hp + np.array([rH.value(dd)[0] for dd in X[:, 0]])
