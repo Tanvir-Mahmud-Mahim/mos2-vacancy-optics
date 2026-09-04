@@ -70,10 +70,13 @@ def main():
         pt = abl['per_type']
         sota_all = abl['overall_meV']['B_distanceTB']
         sota_ons = wrmse(pt['B_distanceTB'], ONS)
+        # gains computed within the one ablation run (identical split), so
+        # the text matches the ablation figure exactly
+        prop_ons_abl = wrmse(pt['E_ref_envMLP'], ONS)
         gain_all = sota_all / overall if overall else 0.0
-        gain_ons = sota_ons / onsite_prop if onsite_prop else 0.0
+        gain_ons = sota_ons / prop_ons_abl if prop_ons_abl else 0.0
         gain_onsS = (pt['B_distanceTB']['onsite_16_16']['rmse_meV']
-                     / ml['onsite_16_16']['rmse_meV'])
+                     / pt['E_ref_envMLP']['onsite_16_16']['rmse_meV'])
     else:
         sota_all, gain_all, gain_ons, gain_onsS = 176.0, 1.36, 8.1, 10.0
 
@@ -106,6 +109,29 @@ def main():
         'onsiteGainS': f'{gain_onsS:.0f}',
         'gapPBE': f'{gap0:.2f}',
     }
+
+    # spectral validation on the Gamma-sampled 5x5 cells, if available
+    sv = os.path.join(ROOT, 'spectral_validation.json')
+    if os.path.exists(sv):
+        s = json.load(open(sv))
+        rs = s['results']
+        gx = np.array([r['gap_exact'] for r in rs])
+        gm = np.array([r['gap_ml'] for r in rs])
+        under = [r['a_sub_exact'] / r['a_sub_ml'] for r in rs
+                 if r['a_sub_ml'] > 1e-6]
+        vals.update({
+            'specNTest': f'{len(rs)}',
+            'specGapMAE': f'{np.abs(gm - gx).mean() * 1e3:.0f}',
+            'specGapMax': f'{np.abs(gm - gx).max() * 1e3:.0f}',
+            'specEigMAE':
+                f"{np.mean([r['eig_mae_win_meV'] for r in rs]):.0f}",
+            'specPearson': f"{s['pearson_exact']:.2f}",
+            'specUnderLo': f'{min(under):.0f}',
+            'specUnderHi': f'{max(under):.1f}',
+            'specThresh': f"{s['thresh']:g}",
+        })
+        proj = max(abs(r['gap_exact'] - r['gap_dft']) for r in rs) * 1e3
+        vals['specProjShift'] = f'{proj:.0f}'
     with open(OUT, 'w') as f:
         for k, v in vals.items():
             f.write(f'\\newcommand{{\\{k}}}{{{v}}}\n')

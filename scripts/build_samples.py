@@ -10,7 +10,8 @@ which = sys.argv[1] if len(sys.argv) > 1 else 'train'
 indir = os.path.join(os.path.dirname(__file__), '..', 'data', which)
 outdir = os.path.join(os.path.dirname(__file__), '..', 'data', 'samples_' + which)
 os.makedirs(outdir, exist_ok=True)
-KGRID = (2, 2)
+# Gamma-only datasets (directory names ending in '55') use a 1x1 mesh
+KGRID = (1, 1) if which.endswith('55') else (2, 2)
 
 for fn in sorted(glob.glob(os.path.join(indir, '*.npz'))):
     name = os.path.basename(fn)[:-4]
