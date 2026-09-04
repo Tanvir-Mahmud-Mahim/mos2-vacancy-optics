@@ -25,9 +25,35 @@ def orbital_offsets(numbers):
     return np.array(offs), n
 
 
-def enumerate_pairs(positions, numbers, cell, images):
-    """All (i, j, image, d) pairs within RCUT. images: list of (m1, m2)."""
+def enumerate_pairs(positions, numbers, cell, images, min_image=False):
+    """All (i, j, image, d) pairs within RCUT. images: list of (m1, m2).
+
+    min_image=True (Gamma-sampled torus; images must be [(0, 0)]): each
+    ordered pair (i, j) is taken once, at its minimum-image displacement
+    over the 3x3 cell neighborhood, matching blocks.pair_blocks with
+    kgrid=(1, 1), so predicted blocks correspond one-to-one to the
+    folded DFT reference blocks.
+    """
     pairs = []
+    if min_image:
+        assert list(images) == [(0, 0)]
+        for i in range(len(numbers)):
+            for j in range(len(numbers)):
+                if i == j:
+                    pairs.append((i, i, (0, 0), np.zeros(3), 0.0, 'onsite'))
+                    continue
+                best = None
+                for m1 in (-1, 0, 1):
+                    for m2 in (-1, 0, 1):
+                        d = (positions[j] + m1 * cell[0] + m2 * cell[1]
+                             - positions[i])
+                        dist = np.linalg.norm(d)
+                        if best is None or dist < best[1] - 1e-9:
+                            best = (d, dist)
+                d, dist = best
+                if dist < RCUT:
+                    pairs.append((i, j, (0, 0), d, dist, 'pair'))
+        return pairs
     for (m1, m2) in images:
         R = m1 * cell[0] + m2 * cell[1]
         for i in range(len(numbers)):
@@ -43,7 +69,7 @@ def enumerate_pairs(positions, numbers, cell, images):
 
 
 def predict_blocks(positions, numbers, cell, images, models, kgrid_env,
-                   refs=None, exact_S=None):
+                   refs=None, exact_S=None, min_image=False):
     """Predict all blocks. Returns {(m1, m2): [(oi, oj, ni, nj, d, H, S)]}.
 
     models: {(kind, Zi, Zj): (BlockModel_H, BlockModel_S)}.
@@ -54,7 +80,8 @@ def predict_blocks(positions, numbers, cell, images, models, kgrid_env,
     supercell whose own cell is larger than the environment radius).
     """
     offs, nao = orbital_offsets(numbers)
-    pairs = enumerate_pairs(positions, numbers, cell, images)
+    pairs = enumerate_pairs(positions, numbers, cell, images,
+                            min_image=min_image)
     # batch descriptors per type
     per_type = {}
     for idx, (i, j, img, d, dist, kind) in enumerate(pairs):

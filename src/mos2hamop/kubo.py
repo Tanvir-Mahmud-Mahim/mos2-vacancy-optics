@@ -47,11 +47,15 @@ def bloch_matrices(blocks_R, nao, kpt, cell):
 
 
 def sigma_xx(blocks_R, nao, kpts_cart, wk, area, omega, mu, T=300.0,
-             eta=0.05, ne_expected=None):
+             eta=0.05, ne_expected=None, s_thresh=None):
     """Optical sheet conductivity in units of e^2/(4 hbar).
 
     omega: array of photon energies (eV). mu: chemical potential (eV,
     same vacuum reference as H). eta: Gaussian broadening (eV).
+    s_thresh: if set, always solve by canonical orthogonalization with
+    this overlap-eigenvalue threshold; apply the same value to reference
+    and learned operators so both spectra live in the same kind of
+    well-conditioned subspace.
     Returns (sigma(omega), n_carriers_per_cm2, gap_info dict).
     """
     sig = np.zeros_like(omega)
@@ -59,13 +63,17 @@ def sigma_xx(blocks_R, nao, kpts_cart, wk, area, omega, mu, T=300.0,
     e_all = []
     for kpt, w in zip(kpts_cart, wk):
         H, S, dHx, dSx = bloch_matrices(blocks_R, nao, kpt, None)
-        try:
-            e, c = eigh(H, S)
-        except LinAlgError:
-            # reconstructed/interpolated S can be mildly non-positive-definite;
-            # fall back to canonical orthogonalization (drops the near-null
-            # overcomplete directions) so the optics stays well defined
-            e, c = gen_eigh(H, S, thresh=1e-4, eigvals_only=False)
+        if s_thresh is not None:
+            e, c = gen_eigh(H, S, thresh=s_thresh, eigvals_only=False)
+        else:
+            try:
+                e, c = eigh(H, S)
+            except LinAlgError:
+                # reconstructed/interpolated S can be mildly
+                # non-positive-definite; fall back to canonical
+                # orthogonalization (drops the near-null overcomplete
+                # directions) so the optics stays well defined
+                e, c = gen_eigh(H, S, thresh=1e-4, eigvals_only=False)
         e_all.append(e)
         f = 1.0 / (1.0 + np.exp(np.clip((e - mu) / (KB * T), -60, 60)))
         # velocity matrix (eV*A units before dividing by hbar)
