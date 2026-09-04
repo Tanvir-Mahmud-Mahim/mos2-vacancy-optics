@@ -1,8 +1,9 @@
 """Figure 4: one Hamiltonian, coupled electronic and optical fingerprints.
 (a) in-gap density of states grows with vacancy count.
 (b) the near-DC (transport) conductivity switches on with vacancies.
-(c) the optical sub-gap absorption tracks the in-gap density of states:
-    a contactless optical readout of the electronic degradation.
+(c) a dilute, isolated divacancy is optically dark at every separation.
+(d) the quantum mechanism: bringing the pair to contact splits the
+    mid-gap levels (hybridization of the defect wavefunctions).
 """
 import os, sys, json
 import numpy as np
@@ -17,7 +18,7 @@ def main():
     an = json.load(open(os.path.join(ROOT, 'dft_analysis.json')))
     res = an['results']
 
-    fig, ax = plt.subplots(1, 3, figsize=(7.1, 2.35))
+    fig, ax = plt.subplots(1, 4, figsize=(7.1, 2.1))
 
     # (a) in-gap DOS vs density
     a = ax[0]
@@ -66,6 +67,28 @@ def main():
     c.text(0.5, 0.5, 'optically dark\nwhen isolated', transform=c.transAxes,
            ha='center', fontsize=7.5, color='0.35')
     F.panel_label(c, '(c)')
+
+    # (d) hybridization splitting: width of the mid-gap manifold vs
+    # separation of the same dilute pair (same numbers as
+    # hybridization_split.py)
+    d = ax[3]
+    import glob as _glob
+    vbm0, cbm0 = an['vbm0'], an['cbm0']
+    sepmap = {p['name']: p['sep'] for p in sd}
+    pts = []
+    for fn in sorted(_glob.glob(os.path.join(ROOT, 'sep', 'sep5_*.npz'))):
+        name = os.path.basename(fn)[:-4]
+        ev = np.load(fn)['eigenvalues']
+        g = np.concatenate([e[(e > vbm0 + 0.1) & (e < cbm0 - 0.1)]
+                            for e in ev])
+        pts.append((sepmap[name], float(g.max() - g.min())))
+    pts.sort()
+    d.plot([p[0] for p in pts], [p[1] for p in pts], 'D',
+           color=F.C['purple'], ms=5, mec='none')
+    d.set_xlabel('vacancy separation (Å)')
+    d.set_ylabel('mid-gap manifold width (eV)')
+    d.set_title('level splitting', fontsize=8, pad=2)
+    F.panel_label(d, '(d)')
     fig.tight_layout(w_pad=1.3)
     out = os.path.join(ROOT, '..', 'figures', 'fig4_coupling.pdf')
     fig.savefig(out); fig.savefig(out.replace('.pdf', '.png'))

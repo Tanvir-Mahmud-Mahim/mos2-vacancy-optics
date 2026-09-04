@@ -54,12 +54,15 @@ def main():
     a.set_xlabel('photon energy (eV)')
     a.set_ylabel(r'$\sigma_{xx}\;(e^2/4\hbar)$, offset')
     a.set_xlim(wlo, whi)
-    a.set_ylim(-0.08 * step, off + 0.55 * step)
+    a.set_ylim(-0.08 * step, off + 0.18 * step)
     a.set_yticks(yticks); a.set_yticklabels(ylabels, fontsize=7)
-    a.legend(fontsize=7, loc='upper right', handlelength=1.4)
-    a.text(0.03, 0.965, 'sub-gap window', transform=a.transAxes,
-           fontsize=7, color='0.35', va='top')
-    F.panel_label(a, '(a)')
+    # legend above the axes so it can never clash with the curves
+    a.legend(fontsize=7, loc='lower left', bbox_to_anchor=(0.0, 1.01),
+             ncol=2, handlelength=1.4, borderaxespad=0,
+             columnspacing=1.2, frameon=False)
+    # the shaded integration window is identified in the caption, so no
+    # in-axes label that could sit on a curve
+    F.panel_label(a, '(a)', y=1.07)
 
     nv = np.array([r['nvac'] for r in res])
     colors = [F.SEQ[min(v * 2, len(F.SEQ) - 1)] for v in nv]
