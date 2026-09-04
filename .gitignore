@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+data/
+logs/
+paper/
+fonts/
+figures/*.png
+*.txt.log
+.ipynb_checkpoints/
+*.npy
+pristine_*.json
+pristine_*.txt
+prod_pristine_*
+vac44_*
+mos2-vacancy-optics-benchmark.zip
+*.zip
