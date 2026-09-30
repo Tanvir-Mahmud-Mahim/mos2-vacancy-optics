@@ -4,6 +4,31 @@ All notable changes to this code are listed here, newest first. The
 repository has no tags or releases, so entries are dated rather than
 numbered.
 
+## Fixes (30 September 2026)
+
+- `scripts/gen_numbers.py`, `scripts/gen_tables.py` and
+  `scripts/gen_ablation_table.py` now write their LaTeX files into `data/`
+  (`data/numbers.tex`, `data/tab_ml.tex`, `data/tab_configs.tex`,
+  `data/tab_ablation.tex`), next to the analysis files they read. Before,
+  they wrote into a `paper/` folder that is not in the repository and that
+  no script created, so they (and `run_pipeline.sh`, at `gen_numbers.py`)
+  stopped with `FileNotFoundError` unless `mkdir -p paper` had been run
+  first. File names and contents are unchanged (checked: identical byte for
+  byte to the files written by the previous version from the same input).
+- `.gitignore`: removed the `paper/` entry; `data/` (already ignored) now
+  also holds the LaTeX files, so they are not committed.
+- `requirements.txt`: `numpy>=1.24` changed to `numpy>=2.0`, because
+  `dft_analysis.py`, `analyze_sep.py` and `spectral_validation.py` call
+  `numpy.trapezoid`, which exists only from NumPy 2.0. The other minimums
+  were raised to the first releases that work with NumPy 2: `scipy>=1.13`
+  (was 1.10), `matplotlib>=3.8.4` (was 3.7), `torch>=2.3` (was 2.0; 2.4.1
+  on Windows), `ase>=3.23` (was 3.22) and `gpaw>=25.1` (was 24.1).
+  `spglib>=2.0` is unchanged.
+- README: removed the `mkdir -p paper` steps and the warnings about the
+  missing `paper/` folder, gave the new file locations and minimum
+  versions with the reason for each, and recorded what was checked with
+  the minimum versions.
+
 ## Documentation update (30 September 2026)
 
 Documentation only; no code, data or figure was changed.

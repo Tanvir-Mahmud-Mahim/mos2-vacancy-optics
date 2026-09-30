@@ -1,7 +1,8 @@
-ase>=3.22
-gpaw>=24.1
-numpy>=1.24
-scipy>=1.10
-torch>=2.0
-matplotlib>=3.7
+ase>=3.23
+gpaw>=25.1
+numpy>=2.0
+scipy>=1.13
+torch>=2.3; platform_system != "Windows"
+torch>=2.4.1; platform_system == "Windows"
+matplotlib>=3.8.4
 spglib>=2.0

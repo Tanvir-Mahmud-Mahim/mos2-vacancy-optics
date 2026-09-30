@@ -124,10 +124,13 @@ mos2-vacancy-optics/
 `-- figures/             the eight figure PDFs as committed by the author
 ```
 
-The scripts write their results to a folder `data/`. The table and number
-scripts write to a folder `paper/`. Neither folder is stored on GitHub (both
-are listed in `.gitignore`). `data/` is created automatically by the scripts
-that need it. **`paper/` is not**, so create it yourself (Section 4).
+The scripts write their results to a folder `data/` inside the repository.
+This includes the LaTeX number and table files written by `gen_numbers.py`,
+`gen_tables.py` and `gen_ablation_table.py` (`data/numbers.tex`,
+`data/tab_ml.tex`, `data/tab_configs.tex`, `data/tab_ablation.tex`), which
+sit next to the analysis files they are made from. `data/` is not stored on
+GitHub (it is listed in `.gitignore`); it is created by the scripts that
+produce the analysis files. No script writes outside the repository.
 
 ---
 
@@ -140,16 +143,37 @@ Section 4, Way A were run here with Python 3.11.15.
 pip install -r requirements.txt
 ```
 
-This installs `ase` (atomic structures), `gpaw` (the DFT program), `numpy`,
-`scipy`, `torch` (PyTorch, for the neural networks), `matplotlib`, and
-`spglib`. The repository's own code does not import `spglib` directly.
+This installs `ase` (atomic structures, 3.23 or newer), `gpaw` (the DFT
+program, 25.1 or newer), `numpy` (2.0 or newer), `scipy` (1.13 or newer),
+`torch` (PyTorch, for the neural networks; 2.3 or newer, 2.4.1 or newer on
+Windows), `matplotlib` (3.8.4 or newer), and `spglib` (2.0 or newer). The
+repository's own code does not import `spglib` directly.
 
 Things to know before installing:
 
-- **NumPy 2.0 or newer is needed in practice.** `requirements.txt` allows
-  `numpy>=1.24`, but `dft_analysis.py`, `analyze_sep.py` and
+- **Why these minimum versions.** `dft_analysis.py`, `analyze_sep.py` and
   `spectral_validation.py` call `numpy.trapezoid`, which first appeared in
-  NumPy 2.0.
+  NumPy 2.0, so NumPy 2.0 is the minimum. The other minimums are the first
+  releases that work with NumPy 2: SciPy 1.13 and Matplotlib 3.8.4 (older
+  SciPy releases and Matplotlib 3.7.3 to 3.8.3 declare `numpy<2` or a
+  similar limit; Matplotlib 3.7.0 to 3.7.2 declare none but fail to import
+  with NumPy 2), PyTorch 2.3 (2.2.2
+  fails here with "Numpy is not available"; on Windows the PyTorch wheels
+  work with NumPy 2 only from 2.4.1), ASE 3.23 (ASE 3.22.1 fails in
+  `ase.build.mx2`, which `structures.py` uses, because it calls
+  `numpy.product`, removed in NumPy 2), and GPAW 25.1 (GPAW 24.6.0 requires
+  `numpy<2`; its release notes say "GPAW almost works with numpy-2, but not
+  quite"; 25.1.0 is the next release and drops that limit).
+- **Checked with the minimum versions** (30 September 2026, Python 3.11,
+  numpy 2.0.0, scipy 1.13.0, matplotlib 3.8.4, torch 2.3.0, ase 3.23.0):
+  the three commands of Way A below ran (`max |T-1| in band: 9.07e-06` and
+  `55 train structures, 6 test structures`, as with current versions, and
+  `fig1_concept.pdf` was written), `structures.make_structure`
+  built a 4 x 4 cell with two vacancies through `ase.build.mx2`, and
+  `gen_numbers.py`, `gen_tables.py` and `gen_ablation_table.py` ran on
+  made-up test input. GPAW could not be checked: building it needs libxc
+  and BLAS, which are not installed on the machine used, so nothing that
+  imports GPAW was run.
 - **GPAW is compiled when pip installs it.** You need a working C/C++
   compiler. On the machine used to check this guide, the build failed
   because the C++ standard headers were missing. Follow the GPAW installation
@@ -220,7 +244,6 @@ the copy deposited on Zenodo, because its DOI is not recorded here.
 With those files in `data/`, these commands need no DFT and no GPAW:
 
 ```
-mkdir -p paper
 python scripts/fig0_abstract.py
 python scripts/fig2_ml.py
 python scripts/fig3_optics.py
@@ -244,17 +267,14 @@ The DFT steps dominate the cost. They were not re-timed for this guide.
 `pack_zenodo.py` notes that the raw H(k), S(k) files are about 100 MB per
 4 x 4 configuration and about 3 GB in total.
 
-**Option 1: `run_pipeline.sh`** (Linux and macOS). Create `paper/` first:
+**Option 1: `run_pipeline.sh`** (Linux and macOS):
 
 ```
-mkdir -p paper
 ./run_pipeline.sh
 ```
 
-Without `paper/`, the script stops at `gen_numbers.py` with
-`FileNotFoundError` (checked here with dummy input), because the script
-stops at the first error (`set -e`). `run_pipeline.sh` also leaves out the
-ablation and the 5 x 5 spectral read-out, so it does not make
+The script stops at the first error (`set -e`). `run_pipeline.sh` leaves out
+the ablation and the 5 x 5 spectral read-out, so it does not make
 `fig_ablation.pdf` or `fig5_spectral.pdf`. For those, use Option 2.
 
 **Option 2: the full sequence by hand.** This is the order the files depend
@@ -282,7 +302,6 @@ python scripts/build_samples.py train55
 python scripts/spectral_validation.py
 
 # numbers, tables, figures
-mkdir -p paper
 python scripts/gen_numbers.py
 python scripts/gen_tables.py
 python scripts/gen_ablation_table.py
@@ -322,9 +341,9 @@ run for this guide. The repository itself records no run times.
 | `python scripts/ml_validation.py` | Retrains on 85% of the structures and measures the error on the other 15% | not re-timed | `data/ml_report.json`, `data/ml_parity.npz` |
 | `python scripts/ml_ablation.py` | Five model variants on the same 85/15 split, including the two-centre tight-binding baseline | not re-timed | `data/ablation.json` |
 | `python scripts/spectral_validation.py` | Trains on the 5 x 5 zone-centre set (unless `models55.pkl` exists) and predicts gaps, eigenvalues and A_sub of the 5 held-out structures | not re-timed | `data/models55.pkl`, `data/refs55.pkl`, `data/spectral_validation.json`, `.npz` |
-| `python scripts/gen_numbers.py` | Writes key numbers from the analysis files as LaTeX macros | not re-timed | `paper/numbers.tex` |
-| `python scripts/gen_tables.py` | Writes the held-out error table and the per-configuration table | not re-timed | `paper/tab_ml.tex`, `paper/tab_configs.tex` |
-| `python scripts/gen_ablation_table.py` | Writes the ablation table | not re-timed | `paper/tab_ablation.tex` |
+| `python scripts/gen_numbers.py` | Writes key numbers from the analysis files as LaTeX macros | not re-timed | `data/numbers.tex` |
+| `python scripts/gen_tables.py` | Writes the held-out error table and the per-configuration table | not re-timed | `data/tab_ml.tex`, `data/tab_configs.tex` |
+| `python scripts/gen_ablation_table.py` | Writes the ablation table | not re-timed | `data/tab_ablation.tex` |
 | `python scripts/fig*.py` | Draws the figures (Section 6) | fig1: 6 s; others not re-timed | `figures/` |
 | `python scripts/eval_test.py` | Optional: errors of the trained 4 x 4 models on the 6 test structures | not re-timed | `data/eval_test.json`, `data/eval_parity.npz`, `data/eval_eigs.npz` |
 | `python scripts/range_analysis.py` | Optional: shows why the 4 x 4 cells with the 2 x 2 k-point grid cannot be read out spectrally by an 11 A local model (printed only) | not re-timed | screen |
@@ -528,7 +547,7 @@ Other checks inside the scripts:
 - **Values fixed inside `gen_numbers.py`.** `subgapPeak` is always written
   as 1.3. If `ml_report.json` or `ablation.json` is missing, the script
   writes built-in fallback numbers instead of stopping. Make sure both files
-  exist before trusting `paper/numbers.tex`.
+  exist before trusting `data/numbers.tex`.
 - **License file.** `LICENSE` is the standard Apache 2.0 text. The
   copyright line in its appendix (line 190) is still the template
   `Copyright [yyyy] [name of copyright owner]`, so the file names no
@@ -542,8 +561,10 @@ Other checks inside the scripts:
 ## 11. Version history
 
 The repository has no tags or version numbers. All code, tests and figures
-were committed on 4 September 2026 (18 commits). This documentation update
-is the first entry after that. Details are in [CHANGELOG.md](CHANGELOG.md).
+were committed on 4 September 2026 (18 commits). A documentation update and
+a set of fixes (LaTeX files now written to `data/` instead of `paper/`;
+corrected minimum versions in `requirements.txt`), both on 30 September
+2026, followed. Details are in [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
