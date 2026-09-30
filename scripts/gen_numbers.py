@@ -1,9 +1,9 @@
-"""Generate paper/numbers.tex from the analysis outputs (single source of truth)."""
+"""Generate data/numbers.tex from the analysis outputs (single source of truth)."""
 import os, sys, json
 import numpy as np
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'data')
-OUT = os.path.join(os.path.dirname(__file__), '..', 'paper', 'numbers.tex')
+OUT = os.path.join(ROOT, 'numbers.tex')
 
 
 def main():

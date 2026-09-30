@@ -1,4 +1,4 @@
-"""Write paper/tab_ablation.tex from data/ablation.json (held-out RMSE).
+"""Write data/tab_ablation.tex from data/ablation.json (held-out RMSE).
 
 Reports, for each model variant, the count-weighted held-out RMSE overall
 and split into onsite (defect-bearing) and pair (hopping) blocks. The
@@ -9,7 +9,7 @@ import os, sys, json
 import numpy as np
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'data')
-OUT = os.path.join(os.path.dirname(__file__), '..', 'paper', 'tab_ablation.tex')
+OUT = os.path.join(ROOT, 'tab_ablation.tex')
 ONS = ['onsite_42_42', 'onsite_16_16']
 PAIR = ['pair_42_42', 'pair_42_16', 'pair_16_16']
 RULE = {'onsite_42_42': 'E_ref_envMLP', 'onsite_16_16': 'E_ref_envMLP',

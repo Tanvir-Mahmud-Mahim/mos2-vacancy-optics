@@ -1,9 +1,10 @@
-"""Generate supplementary LaTeX tables from the analysis outputs."""
+"""Generate supplementary LaTeX tables (data/tab_ml.tex, data/tab_configs.tex)
+from the analysis outputs."""
 import os, sys, json
 import numpy as np
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'data')
-PAP = os.path.join(os.path.dirname(__file__), '..', 'paper')
+OUT = ROOT  # tables are written next to the analysis files
 
 
 def ml_table():
@@ -21,7 +22,7 @@ def ml_table():
     tex = ("\\begin{tabular}{lrr}\n\\toprule\n"
            "Block type & Held-out blocks & RMSE (meV) \\\\\n\\midrule\n"
            f"{body}\n\\bottomrule\n\\end{{tabular}}\n")
-    open(os.path.join(PAP, 'tab_ml.tex'), 'w').write(tex)
+    open(os.path.join(OUT, 'tab_ml.tex'), 'w').write(tex)
 
 
 def config_table():
@@ -38,7 +39,7 @@ def config_table():
            "Configuration & $n_{\\mathrm{vac}}$ & $A_{\\mathrm{sub}}$ & "
            "$\\sigma(\\omega\\!\\to\\!0)$ & mid-gap/$k$ \\\\\n\\midrule\n"
            f"{body}\n\\bottomrule\n\\end{{tabular}}\n")
-    open(os.path.join(PAP, 'tab_configs.tex'), 'w').write(tex)
+    open(os.path.join(OUT, 'tab_configs.tex'), 'w').write(tex)
 
 
 if __name__ == '__main__':
