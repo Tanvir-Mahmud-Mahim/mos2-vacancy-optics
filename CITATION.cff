@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite it and the paper 'Learning the quantum Hamiltonian of defective monolayer MoS2 reveals collective vacancy brightness decoupled from defect count'. The author listed here is the author of the code commits; the paper's author list is not recorded in this repository."
+title: "mos2-vacancy-optics: learned Hamiltonian and optics pipeline for defective monolayer MoS2"
+authors:
+  - family-names: Mahim
+    given-names: Tanvir M.
+    affiliation: BRAC University
+    email: tanvir.mahim@bracu.ac.bd
+license: Apache-2.0
+repository-code: "https://github.com/Tanvir-Mahmud-Mahim/mos2-vacancy-optics"
+keywords:
+  - MoS2
+  - sulfur vacancy
+  - density-functional theory
+  - machine-learned Hamiltonian
+  - Kubo optical conductivity
