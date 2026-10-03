@@ -2,17 +2,17 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-Code for the paper **"Learning the quantum Hamiltonian of defective monolayer
+This repository holds the code for the paper **"Learning the quantum Hamiltonian of defective monolayer
 MoS2 reveals collective vacancy brightness decoupled from defect count."**
 
 **The paper's author list is not recorded in this repository**, and neither
-is its publication status. The code itself was committed by Tanvir M. Mahim
-(BRAC University), who is the only author in the git history.
+is its publication status. I, Tanvir M. Mahim (BRAC University), committed
+the code, and I am the only author in the git history.
 
 - Repository: https://github.com/Tanvir-Mahmud-Mahim/mos2-vacancy-optics
 - Archived data: the earlier README says the benchmark dataset is archived
   on Zenodo and that the DOI is given in the paper. The DOI is not recorded
-  in this repository, so it is not repeated here.
+  in this repository, so I do not repeat it here.
 
 ---
 
@@ -45,32 +45,32 @@ They can also make the sheet absorb light at photon energies below the gap.
 
 The code computes both effects from one quantum-mechanical description of the
 electrons. This description is the **Hamiltonian** H, a matrix that gives the
-electron energies. Because the atomic orbitals used here overlap, it comes
-together with an **overlap matrix** S. The steps are:
+electron energies. The atomic orbitals used here overlap, so H comes together
+with an **overlap matrix** S. Here are the steps:
 
 - **Build model sheets with vacancies.** Each model is a repeating patch of the
-  crystal (a **supercell**) of 4 x 4 or 5 x 5 unit cells, with 0 to 3 sulfur
-  atoms removed and the atoms shaken slightly at random.
+  crystal (a **supercell**) of 4 x 4 or 5 x 5 unit cells. It has 0 to 3 sulfur
+  atoms removed, and its atoms are shaken slightly at random.
 - **Compute H and S with density-functional theory (DFT).** DFT is the standard
-  first-principles method for electrons in materials. Here it is run with
-  the program GPAW, using atom-centred orbitals.
+  first-principles method for electrons in materials. The code runs it with
+  the program GPAW, using atom-centered orbitals.
 - **Read out two things from the same H and S.** The first is the electronic
   structure (energy levels and mid-gap states). The second is the optical
-  conductivity, which says how strongly the sheet absorbs light at each photon
-  energy. It is computed with the **Kubo formula**, the standard linear-response
-  expression for conductivity. The main optical number is the **sub-gap
-  absorption** A_sub: the optical conductivity added up over photon energies
-  below the band gap.
+  conductivity, which tells you how strongly the sheet absorbs light at each
+  photon energy. The code computes it with the **Kubo formula**, the standard
+  linear-response expression for conductivity. The main optical number is the
+  **sub-gap absorption** A_sub: the optical conductivity added up over photon
+  energies below the band gap.
 - **Learn H and S with machine learning.** Small neural networks predict each
-  block of H and S from the positions of nearby atoms. They are compared with
-  a conventional two-centre tight-binding model (hopping values that depend only
-  on the distance between two atoms). For the spectral test, a separate set of
-  networks is trained on 16 5 x 5 cells computed at the zone centre only (a
-  single k-point). Those networks then predict 5 further 5 x 5 structures
-  that were kept out of their training.
+  block of H and S from the positions of nearby atoms. They are compared
+  with a conventional two-center tight-binding model (hopping values that depend
+  only on the distance between two atoms). For the spectral test, a separate
+  set of networks is trained on 16 5 x 5 cells computed at the zone center
+  only (a single k-point). Those networks then predict 5 further 5 x 5
+  structures that were kept out of their training.
 
-According to the earlier README of this repository, the paper finds the
-following:
+The earlier README of this repository describes the paper's findings as
+follows:
 
 - The vacancies open a band of sub-gap absorption. Its **average** strength
   grows with the vacancy density.
@@ -79,19 +79,19 @@ following:
   bright. Meanwhile, the number of mid-gap states barely changes.
 - The brightness is set by the character of the defect wavefunctions (the
   shape of the electron states around the vacancies), not by how many such
-  states there are. Light absorption is therefore a **selective rather than
+  states there are. So light absorption is a **selective rather than
   a counting probe** of the vacancies.
-- A dilute, isolated pair of vacancies is dark. Brightness requires the
-  vacancy wavefunctions to **hybridize** (mix) into an overlapping defect
+- A dilute, isolated pair of vacancies is dark. To be bright, the vacancy
+  wavefunctions need to **hybridize** (mix) into an overlapping defect
   band. This is the "collective" property of the whole set of vacancies
-  named in the title.
+  that the title refers to.
 - On the 5 held-out 5 x 5 cells, the fully learned H and S predict the band
-  gaps to 73 meV on average and reproduce the brightness ordering from the
-  atomic geometry alone.
+  gaps to 73 meV on average. They also reproduce the brightness ordering
+  from the atomic geometry alone.
 
-These are the paper's results as summarised in the earlier README. This
-repository does not contain the data files needed to check them without
-re-running the calculations.
+These are the paper's results as the earlier README summarized them. This
+repository does not contain the data files you would need to check them,
+so you would have to re-run the calculations.
 
 ---
 
@@ -127,17 +127,17 @@ mos2-vacancy-optics/
 The scripts write their results to a folder `data/` inside the repository.
 This includes the LaTeX number and table files written by `gen_numbers.py`,
 `gen_tables.py` and `gen_ablation_table.py` (`data/numbers.tex`,
-`data/tab_ml.tex`, `data/tab_configs.tex`, `data/tab_ablation.tex`), which
+`data/tab_ml.tex`, `data/tab_configs.tex`, `data/tab_ablation.tex`). They
 sit next to the analysis files they are made from. `data/` is not stored on
-GitHub (it is listed in `.gitignore`); it is created by the scripts that
-produce the analysis files. No script writes outside the repository.
+GitHub (it is listed in `.gitignore`). The scripts that produce the analysis
+files create it for you. No script writes outside the repository.
 
 ---
 
 ## 3. Installation
 
-The earlier README asks for **Python 3.11**. The lightweight parts listed in
-Section 4, Way A were run here with Python 3.11.15.
+The earlier README asks for **Python 3.11**. I ran the lightweight parts
+listed in Section 4, Way A with Python 3.11.15.
 
 ```
 pip install -r requirements.txt
@@ -149,38 +149,40 @@ program, 25.1 or newer), `numpy` (2.0 or newer), `scipy` (1.13 or newer),
 Windows), `matplotlib` (3.8.4 or newer), and `spglib` (2.0 or newer). The
 repository's own code does not import `spglib` directly.
 
-Things to know before installing:
+A few things you should know before you install:
 
 - **Why these minimum versions.** `dft_analysis.py`, `analyze_sep.py` and
   `spectral_validation.py` call `numpy.trapezoid`, which first appeared in
-  NumPy 2.0, so NumPy 2.0 is the minimum. The other minimums are the first
-  releases that work with NumPy 2: SciPy 1.13 and Matplotlib 3.8.4 (older
-  SciPy releases and Matplotlib 3.7.3 to 3.8.3 declare `numpy<2` or a
-  similar limit; Matplotlib 3.7.0 to 3.7.2 declare none but fail to import
-  with NumPy 2), PyTorch 2.3 (2.2.2
-  fails here with "Numpy is not available"; on Windows the PyTorch wheels
-  work with NumPy 2 only from 2.4.1), ASE 3.23 (ASE 3.22.1 fails in
-  `ase.build.mx2`, which `structures.py` uses, because it calls
-  `numpy.product`, removed in NumPy 2), and GPAW 25.1 (GPAW 24.6.0 requires
-  `numpy<2`; its release notes say "GPAW almost works with numpy-2, but not
-  quite"; 25.1.0 is the next release and drops that limit).
+  NumPy 2.0. So NumPy 2.0 is the minimum. The other minimums are the first
+  releases that work with NumPy 2:
+  - SciPy 1.13 and Matplotlib 3.8.4. Older SciPy releases and Matplotlib
+    3.7.3 to 3.8.3 declare `numpy<2` or a similar limit. Matplotlib 3.7.0 to
+    3.7.2 declare none, but they fail to import with NumPy 2.
+  - PyTorch 2.3. Version 2.2.2 failed in my test with "Numpy is not
+    available". On Windows, the PyTorch wheels work with NumPy 2 only from
+    2.4.1.
+  - ASE 3.23. ASE 3.22.1 fails in `ase.build.mx2`, which `structures.py`
+    uses, because it calls `numpy.product`, which was removed in NumPy 2.
+  - GPAW 25.1. GPAW 24.6.0 requires `numpy<2`. Its release notes say "GPAW
+    almost works with numpy-2, but not quite". 25.1.0 is the next release,
+    and it drops that limit.
 - **Checked with the minimum versions** (30 September 2026, Python 3.11,
-  numpy 2.0.0, scipy 1.13.0, matplotlib 3.8.4, torch 2.3.0, ase 3.23.0):
-  the three commands of Way A below ran (`max |T-1| in band: 9.07e-06` and
-  `55 train structures, 6 test structures`, as with current versions, and
-  `fig1_concept.pdf` was written), `structures.make_structure`
-  built a 4 x 4 cell with two vacancies through `ase.build.mx2`, and
-  `gen_numbers.py`, `gen_tables.py` and `gen_ablation_table.py` ran on
-  made-up test input. GPAW could not be checked: building it needs libxc
-  and BLAS, which are not installed on the machine used, so nothing that
-  imports GPAW was run.
+  numpy 2.0.0, scipy 1.13.0, matplotlib 3.8.4, torch 2.3.0, ase 3.23.0).
+  The three commands of Way A below ran. They printed
+  `max |T-1| in band: 9.07e-06` and `55 train structures, 6 test structures`,
+  the same as with current versions, and they wrote `fig1_concept.pdf`.
+  `structures.make_structure` built a 4 x 4 cell with two vacancies through
+  `ase.build.mx2`. `gen_numbers.py`, `gen_tables.py` and
+  `gen_ablation_table.py` ran on made-up test input. I could not check GPAW.
+  Building it needs libxc and BLAS, which are not installed on the machine I
+  used, so I ran nothing that imports GPAW.
 - **GPAW is compiled when pip installs it.** You need a working C/C++
-  compiler. On the machine used to check this guide, the build failed
-  because the C++ standard headers were missing. Follow the GPAW installation
-  guide for your system if pip fails.
+  compiler. On the machine I used to check this guide, the build failed
+  because the C++ standard headers were missing. If pip fails, follow the
+  GPAW installation guide for your system.
 - **GPAW needs its atomic data files** (PAW setups and the `dzp` orbital
   basis). `dftrun.py` looks for them in the folder named by the environment
-  variable `GPAW_SETUP_PATH`. If that variable is not set, it uses
+  variable `GPAW_SETUP_PATH`. If you have not set that variable, it uses
   `~/gpaw-data/setups`.
 - **Most learning scripts import GPAW even though they run no DFT.** This is
   because `rotations.py` uses GPAW's own rotation matrices. The table below
@@ -193,8 +195,8 @@ Things to know before installing:
 | `dft_analysis.py`, `analyze_sep.py` | NumPy, SciPy, ASE |
 | all `fig*.py`, `gen_numbers.py`, `gen_tables.py`, `gen_ablation_table.py`, `hybridization_split.py`, `pack_*.py`, `manifest.py`, `tests/test_negf_chain.py` | NumPy (and Matplotlib for figures) |
 
-**Fonts (optional).** `scripts/figstyle.py` uses Times New Roman when
-`times.ttf`, `timesbd.ttf` and `timesi.ttf` are in a folder named `fonts/` in
+**Fonts (optional).** `scripts/figstyle.py` uses Times New Roman if you put
+`times.ttf`, `timesbd.ttf` and `timesi.ttf` in a folder named `fonts/` in
 the repository folder (this folder is not on GitHub). Otherwise Matplotlib
 prints many `findfont: Font family 'Times New Roman' not found` warnings and
 falls back to DejaVu Sans. The figure is still written.
@@ -210,7 +212,7 @@ Run all commands from the repository folder.
 
 ### Way A: check that the lightweight parts work (a few seconds)
 
-These need only NumPy and Matplotlib, and no DFT data:
+You need only NumPy and Matplotlib for these, and no DFT data:
 
 ```
 python tests/test_negf_chain.py
@@ -219,29 +221,31 @@ python scripts/fig1_concept.py
 ```
 
 - `test_negf_chain.py` prints the transmission of a perfect one-dimensional
-  chain. It should be 1 at every listed energy. Measured here:
-  `max |T-1| in band: 9.07e-06`, 0.4 s.
+  chain. It should be 1 at every listed energy. When I ran it, it printed
+  `max |T-1| in band: 9.07e-06` and took 0.4 s.
 - `manifest.py` prints `55 train structures, 6 test structures` and the first
-  few entries. Measured here: under 0.1 s.
-- `fig1_concept.py` redraws the concept figure, which is a drawing and
-  needs no data. Measured here: 6 s. **It overwrites
+  few entries. When I ran it, it took under 0.1 s.
+- `fig1_concept.py` redraws the concept figure. This figure is a drawing and
+  needs no data. When I ran it, it took 6 s. **It overwrites
   `figures/fig1_concept.pdf`** and also writes `figures/fig1_concept.png`.
 
-All three were measured on a shared two-core machine.
+I timed all three on a shared two-core machine.
 
 ### Way B: redraw figures from archived results
 
-This needs the analysis outputs in `data/`. `scripts/pack_zenodo.py` writes
-an archive `mos2-vacancy-optics-benchmark.zip` whose files sit under `data/`:
-`dft_analysis.json`, `dft_spectra.npz`, `separation.json`,
+For this you need the analysis outputs in `data/`. `scripts/pack_zenodo.py`
+writes an archive `mos2-vacancy-optics-benchmark.zip` whose files sit under
+`data/`: `dft_analysis.json`, `dft_spectra.npz`, `separation.json`,
 `ml_report.json`, `ablation.json`, `models.pkl`, `refs.pkl`,
-`ml_parity.npz`, and the `train/` and `sep/` structure files, which contain
-the eigenvalues but not H and S. Unzipping that archive in the repository
-folder therefore fills `data/`. `ml_parity.npz` is a 400,000-point sample
-drawn with a fixed random seed, not the full set. This guide could not check
-the copy deposited on Zenodo, because its DOI is not recorded here.
+`ml_parity.npz`, and the `train/` and `sep/` structure files. The structure
+files contain the eigenvalues but not H and S. If you unzip that archive
+in the repository folder, it fills `data/`. `ml_parity.npz` is a
+400,000-point sample drawn with a fixed random seed, not the full set. I
+could not check the copy deposited on Zenodo, because its DOI is not
+recorded here.
 
-With those files in `data/`, these commands need no DFT and no GPAW:
+Once those files are in `data/`, you can run these commands without DFT and
+without GPAW:
 
 ```
 python scripts/fig0_abstract.py
@@ -263,7 +267,7 @@ the zip. Copy them into `data/` first.
 
 ### Way C: recompute everything from scratch (long)
 
-The DFT steps dominate the cost. They were not re-timed for this guide.
+The DFT steps take most of the time. I did not re-time them for this guide.
 `pack_zenodo.py` notes that the raw H(k), S(k) files are about 100 MB per
 4 x 4 configuration and about 3 GB in total.
 
@@ -277,8 +281,8 @@ The script stops at the first error (`set -e`). `run_pipeline.sh` leaves out
 the ablation and the 5 x 5 spectral read-out, so it does not make
 `fig_ablation.pdf` or `fig5_spectral.pdf`. For those, use Option 2.
 
-**Option 2: the full sequence by hand.** This is the order the files depend
-on each other:
+**Option 2: the full sequence by hand.** The commands below follow the order
+in which the files depend on each other:
 
 ```
 # DFT data (long)
@@ -315,23 +319,23 @@ python scripts/figS_validation.py
 python scripts/fig_ablation.py
 ```
 
-The DFT workers skip any structure whose output file already exists. You can
-therefore split a slice across several runs, for example
+The DFT workers skip any structure whose output file already exists. So you
+can split a slice across several runs, for example
 `gen_dataset.py 0 20 train` and `gen_dataset.py 20 55 train`.
-`gen_dataset.py idx train 3,7,12` runs chosen manifest entries only.
+`gen_dataset.py idx train 3,7,12` runs only the manifest entries you choose.
 
 ---
 
 ## 5. The scripts, step by step
 
-"Not re-timed" means the step needs DFT data or GPAW, which could not be
-run for this guide. The repository itself records no run times.
+"Not re-timed" means the step needs DFT data or GPAW, which I could not run
+for this guide. The repository itself records no run times.
 
 | Command | What it does | Time | Results |
 |---|---|---|---|
 | `python scripts/gen_dataset.py START END [train\|test]` | Builds entries START to END-1 of the 4 x 4 manifest (`manifest.py`) and runs DFT on each | long (not re-timed) | `data/train/*.npz` or `data/test/*.npz` |
 | `python scripts/gen_separation.py [ranks]` | Two top-layer vacancies in a 5 x 5 cell, from touching to far apart (default partner ranks 0, 2, 5, 9, 14), and runs DFT | long (not re-timed) | `data/sep/sep5_*.npz` |
-| `python scripts/gen_gamma55.py train\|test I J` | 5 x 5 structures computed at the zone centre only (a single k-point) | long (not re-timed) | `data/train55/`, `data/test55/` |
+| `python scripts/gen_gamma55.py train\|test I J` | 5 x 5 structures computed at the zone center only (a single k-point) | long (not re-timed) | `data/train55/`, `data/test55/` |
 | `python scripts/gen_gamma55.py probe` | One pristine 5 x 5 run, used to measure how long a run takes | long (not re-timed) | `data/probe55/` |
 | `python scripts/dft_analysis.py` | For every 4 x 4 training structure: Kubo optical conductivity, sub-gap absorption A_sub, near-zero-frequency conductivity, and number of in-gap states | not re-timed | `data/dft_analysis.json`, `data/dft_spectra.npz` |
 | `python scripts/analyze_sep.py` | A_sub versus vacancy separation for the separation series | not re-timed | `data/separation.json` |
@@ -339,8 +343,8 @@ run for this guide. The repository itself records no run times.
 | `python scripts/build_samples.py train\|test\|train55\|test55` | Cuts H and S into per-atom-pair blocks, rotates them into the pair frame, and computes the pair descriptors | not re-timed | `data/samples_<name>/` |
 | `python scripts/train_models.py` | Trains the five block-type networks for H and S on all training structures | not re-timed | `data/models.pkl`, `data/refs.pkl`, `data/train_report.pkl` |
 | `python scripts/ml_validation.py` | Retrains on 85% of the structures and measures the error on the other 15% | not re-timed | `data/ml_report.json`, `data/ml_parity.npz` |
-| `python scripts/ml_ablation.py` | Five model variants on the same 85/15 split, including the two-centre tight-binding baseline | not re-timed | `data/ablation.json` |
-| `python scripts/spectral_validation.py` | Trains on the 5 x 5 zone-centre set (unless `models55.pkl` exists) and predicts gaps, eigenvalues and A_sub of the 5 held-out structures | not re-timed | `data/models55.pkl`, `data/refs55.pkl`, `data/spectral_validation.json`, `.npz` |
+| `python scripts/ml_ablation.py` | Five model variants on the same 85/15 split, including the two-center tight-binding baseline | not re-timed | `data/ablation.json` |
+| `python scripts/spectral_validation.py` | Trains on the 5 x 5 zone-center set (unless `models55.pkl` exists) and predicts gaps, eigenvalues and A_sub of the 5 held-out structures | not re-timed | `data/models55.pkl`, `data/refs55.pkl`, `data/spectral_validation.json`, `.npz` |
 | `python scripts/gen_numbers.py` | Writes key numbers from the analysis files as LaTeX macros | not re-timed | `data/numbers.tex` |
 | `python scripts/gen_tables.py` | Writes the held-out error table and the per-configuration table | not re-timed | `data/tab_ml.tex`, `data/tab_configs.tex` |
 | `python scripts/gen_ablation_table.py` | Writes the ablation table | not re-timed | `data/tab_ablation.tex` |
@@ -358,16 +362,16 @@ its output (`data/samples_test55/`). `spectral_validation.py` reads the raw
 `transport_series.py` are not called by `run_pipeline.sh`, and no figure
 uses their output.
 
-Random choices (which S atoms are removed, how atoms are shaken, the
-train/test split, network initialisation) all use fixed seeds written in the
-scripts.
+All random choices use fixed seeds written in the scripts. This covers which
+S atoms are removed, how atoms are shaken, the train/test split, and network
+initialization.
 
 ---
 
 ## 6. Which script makes which figure
 
-The figure labels are taken from each script's own description. The
-committed PDFs in `figures/` are the author's versions.
+The figure labels come from each script's own description. The PDFs
+committed in `figures/` are my versions.
 
 | File | Label in the script | Content | Data needed | Drawn by |
 |---|---|---|---|---|
@@ -378,7 +382,7 @@ committed PDFs in `figures/` are the author's versions.
 | `fig4_coupling.pdf` | Figure 4 | In-gap states and near-zero-frequency conductivity versus density; isolated pair is dark; level splitting versus separation | `dft_analysis.json`, `separation.json`, `data/sep/*.npz` | `fig4_coupling.py` |
 | `fig5_spectral.pdf` | Figure 5 | Learned versus DFT spectra, A_sub and gaps on the 5 x 5 test cells | `spectral_validation.json`, `.npz` | `fig5_spectral.py` |
 | `figS_validation.pdf` | Supplementary validation figure | Pristine absorption edge; transmission of a one-dimensional chain | `dft_spectra.npz` | `figS_validation.py` |
-| `fig_ablation.pdf` | (no number given) | Ablation and comparison with two-centre tight binding | `ablation.json` | `fig_ablation.py` |
+| `fig_ablation.pdf` | (no number given) | Ablation and comparison with two-center tight binding | `ablation.json` | `fig_ablation.py` |
 
 Every figure script also writes a `.png`, except `fig5_spectral.py`, which
 writes only the PDF.
@@ -393,7 +397,7 @@ writes only the PDF.
 | `dftrun.py` | `run_structure`: GPAW calculation, energies shifted so the vacuum level is zero, and saving of H(k), S(k), eigenvalues, forces and geometry |
 | `blocks.py` | Orbital counts (Mo 29, S 13); inverse Fourier transform H(k) to H(R); cutting per-pair blocks at the nearest periodic copy |
 | `rotations.py` | Rotation of orbital blocks about the vertical axis, using GPAW's `gpaw.rotation` |
-| `features.py` | Pair descriptor: 4 distance numbers plus a smoothed neighbour cloud around each end of the pair, in the pair's own frame (340 numbers in total) |
+| `features.py` | Pair descriptor: 4 distance numbers plus a smoothed neighbor cloud around each end of the pair, in the pair's own frame (340 numbers in total) |
 | `reference.py` | `DistanceReference`: mean block per distance bin (one bin for on-site blocks); the networks learn only the difference from it |
 | `mlmodel.py` | Five block types; `BlockMLP` (two hidden layers of 320 units, SiLU activation); `BlockModel` training with Adam and early stopping; on-site blocks use the full descriptor, pair blocks only the 4 distance numbers |
 | `assemble.py` | Lists pairs within 11 A, predicts blocks, rotates them back, and averages each block with its reverse so H and S stay symmetric |
@@ -401,14 +405,14 @@ writes only the PDF.
 | `kubo.py` | `bloch_matrices`, `sigma_xx`: Kubo-Greenwood conductivity with Gaussian broadening, in units of e^2/(4 hbar) |
 | `eigsolve.py` | `gen_eigh`: solves H c = E S c after dropping directions where S has eigenvalues below a threshold (canonical orthogonalization) |
 | `negf.py` | Surface Green's function of a semi-infinite lead (Sancho-Rubio method) and transmission through a chain of slices (recursive Green's function) |
-| `device.py` | `build_layers`: splits a ribbon into principal layers (slices) and collects the couplings between neighbouring slices |
+| `device.py` | `build_layers`: splits a ribbon into principal layers (slices) and collects the couplings between neighboring slices |
 
 ---
 
 ## 8. Where the numbers come from
 
 All values below are as written in the code. The code gives no literature
-source for them; the lattice values are labelled "PBE" in the comments.
+source for them. The comments label the lattice values "PBE".
 
 **Structure** (`structures.py`, `atomrender.py`):
 
@@ -417,16 +421,16 @@ source for them; the lattice values are labelled "PBE" in the comments.
 | In-plane lattice constant | 3.184 A ("PBE in-plane lattice constant") |
 | Vertical S-S distance | 3.127 A ("PBE S-S vertical distance") |
 | Vacuum on each side of the sheet | 5.5 A (see Section 10) |
-| 4 x 4 supercell | 16 Mo + 32 S = 48 atoms before vacancies (checked here) |
-| 5 x 5 supercell | 75 atoms before vacancies (checked here) |
+| 4 x 4 supercell | 16 Mo + 32 S = 48 atoms before vacancies (I checked this) |
+| 5 x 5 supercell | 75 atoms before vacancies (I checked this) |
 | Random shaking ("rattle") | Gaussian, standard deviation 0 to 0.06 A, set per structure in the manifests |
 | Strain (4 x 4 set) | -1% or +1% (test: +0.8%) |
 
-**DFT settings** (`dftrun.py`): GPAW, atom-centred orbitals (`mode='lcao'`)
+**DFT settings** (`dftrun.py`): GPAW, atom-centered orbitals (`mode='lcao'`)
 with the `dzp` basis, PBE exchange-correlation, grid spacing 0.24 A,
-Fermi-Dirac smearing 0.01 eV, symmetry off. The k-point grid is centred on
-the zone centre: 2 x 2 x 1 by default (4 x 4 set and separation series) and
-1 x 1 x 1 for the 5 x 5 zone-centre set.
+Fermi-Dirac smearing 0.01 eV, symmetry off. The k-point grid is centered on
+the zone center. It is 2 x 2 x 1 by default (4 x 4 set and separation
+series) and 1 x 1 x 1 for the 5 x 5 zone-center set.
 
 **Datasets** (`manifest.py`, `gen_gamma55.py`, `gen_separation.py`):
 
@@ -434,11 +438,11 @@ the zone centre: 2 x 2 x 1 by default (4 x 4 set and separation series) and
 |---|---|---|---|
 | `train` | 4 x 4 | 55 | 11 pristine, 16 with 1 vacancy (4 in the bottom layer), 14 with 2, 6 with 3, 8 strained (4 pristine, 4 with 1 vacancy) |
 | `test` | 4 x 4 | 6 | 1 pristine, 1 with 1 vacancy, 2 with 2, 1 with 3, 1 strained with 1 vacancy |
-| `train55` | 5 x 5, zone centre | 16 | 4 pristine, 5 with 1 vacancy, 4 with 2, 3 with 3 |
-| `test55` | 5 x 5, zone centre | 5 | 1 pristine, 1 with 1 vacancy, 2 with 2, 1 with 3 |
+| `train55` | 5 x 5, zone center | 16 | 4 pristine, 5 with 1 vacancy, 4 with 2, 3 with 3 |
+| `test55` | 5 x 5, zone center | 5 | 1 pristine, 1 with 1 vacancy, 2 with 2, 1 with 3 |
 | `sep` | 5 x 5 | 5 | 2 top-layer vacancies at partner ranks 0, 2, 5, 9, 14; shaken by 0.02 A (seed 7) |
 
-The counts of 55, 6, 16 and 5 were checked by running the manifest code.
+I checked the counts of 55, 6, 16 and 5 by running the manifest code.
 
 **Optics and electronic structure** (`dft_analysis.py`, `analyze_sep.py`,
 `spectral_validation.py`):
@@ -460,8 +464,8 @@ The counts of 55, 6, 16 and 5 were checked by running the manifest code.
 | Quantity | Value |
 |---|---|
 | Pair range | 11 A |
-| Neighbour radius in the descriptor | 6 A, 6 radial Gaussians (width 0.9 A), angular order 3 |
-| Descriptor length | 340 (checked here) |
+| Neighbor radius in the descriptor | 6 A, 6 radial Gaussians (width 0.9 A), angular order 3 |
+| Descriptor length | 340 (I checked this) |
 | Distance-reference bins | 24 |
 | Network | 2 hidden layers of 320 units, SiLU; Adam, learning rate 1e-3, batch 512, 10% of blocks held back for early stopping |
 | Epochs (maximum) | H: 350, S: 250 (`train_models.py`, `spectral_validation.py`); 300 (`ml_validation.py`); 220 (`ml_ablation.py`) |
@@ -477,9 +481,10 @@ stops with an error when a value is off, so there is no automatic pass/fail.
 
 - **`tests/test_negf_chain.py`** (no data needed). It computes the
   transmission of a clean one-dimensional chain, which should be exactly 1
-  inside the band. Measured here: largest deviation 9.07e-06. It also prints
-  the transmission of a two-channel chain with one raised slice: 1.4706 at
-  zero energy, where 2 would be the value without the barrier.
+  inside the band. When I ran it, the largest deviation was 9.07e-06. It also
+  prints the transmission of a two-channel chain with one raised slice. That
+  value is 1.4706 at zero energy, where 2 would be the value without the
+  barrier.
 - **`tests/test_blocks.py`** (needs `data/train/prist_000.npz` and GPAW). It
   checks that H(R) transforms back to the stored H(k), that H(R) is real,
   and that H is symmetric between pairs (i, j) and (j, i). It also checks
@@ -487,21 +492,21 @@ stops with an error when a value is off, so there is no automatic pass/fail.
   their own frame.
 - **`tests/test_kubo_pristine.py`** (needs `data/kubo_prim.npz`). It computes
   the optical conductivity of the perfect crystal on a dense 18 x 18 k-point
-  grid and prints the smallest direct gap and the conductivity below and
+  grid. It prints the smallest direct gap and the conductivity below and
   above the edge. No script in this repository creates `data/kubo_prim.npz`.
-  The file is opened by a relative path, so run the test from the
-  repository folder.
+  The test opens the file by a relative path, so run it from the repository
+  folder.
 
 Other checks inside the scripts:
 
-- `build_samples.py` prints and saves the largest imaginary part of H(R),
-  which should be close to zero because the orbitals are real.
+- `build_samples.py` prints and saves the largest imaginary part of H(R).
+  It should be close to zero because the orbitals are real.
 - `transport_series.py` prints `maxskip`, the largest slice-to-slice jump with
-  a nonzero coupling. The method assumes that only neighbouring slices
-  couple, which means `maxskip` should be 1.
+  a nonzero coupling. The method assumes that only neighboring slices
+  couple, so `maxskip` should be 1.
 - `spectral_validation.py` records the gap and A_sub three ways: the exact
-  DFT result, DFT in the reduced subspace, and the learned model. The effect
-  of the subspace reduction itself is therefore visible.
+  DFT result, DFT in the reduced subspace, and the learned model. This lets
+  you see the effect of the subspace reduction itself.
 - `range_analysis.py` shows how the eigenvalues change when the exact DFT
   blocks are cut off at 11 A.
 
@@ -519,52 +524,54 @@ Other checks inside the scripts:
   zero.
 - **Chemical potential.** `dft_analysis.py` and `analyze_sep.py` use the DFT
   Fermi level. `spectral_validation.py` places it in the middle of the gap,
-  using the electron count, in the same way for DFT and for the learned
-  model.
+  using the electron count. It does this the same way for DFT and for the
+  learned model.
 - **Optics approximation.** The velocity operator uses only the distances
   between atoms. Dipoles within a single atom are neglected, as the
   `kubo.py` description states. Only the x-direction conductivity
   (sigma_xx) is computed.
 - **Real-space blocks.** A calculation on a 2 x 2 k-point grid defines H(R) on
   a torus two supercells wide. Each pair is taken at its nearest periodic
-  copy. With 4 x 4 cells the largest such pair distance is 14.79 A. With
-  5 x 5 cells at the zone centre only it is 9.32 A, inside the 11 A learning
-  range. Both values were checked here and match the scripts' own statements
+  copy. With 4 x 4 cells, the largest such pair distance is 14.79 A. With
+  5 x 5 cells at the zone center only, it is 9.32 A, inside the 11 A learning
+  range. I checked both values, and they match the scripts' own statements
   (14.8 A and about 9.3 A).
 - **Nearly singular overlap.** The `dzp` basis gives an overlap matrix with
-  eigenvalues close to zero. Small errors along those directions are
+  eigenvalues close to zero. Small errors along those directions get
   amplified, so `eigsolve.py` drops them. `spectral_validation.py` uses a
-  larger threshold (0.1) for both DFT and the learned model, so that both are
-  compared in the same subspace.
-- **Proposed model.** On-site blocks use the full neighbourhood descriptor.
+  larger threshold (0.1) for both DFT and the learned model. That way, both
+  are compared in the same subspace.
+- **Proposed model.** On-site blocks use the full neighborhood descriptor.
   Pair blocks use only the 4 distance numbers. In `ml_ablation.py` these are
-  variants E and D; the "proposed" rows of `fig_ablation.py` and
+  variants E and D. The "proposed" rows of `fig_ablation.py` and
   `gen_ablation_table.py` combine E for on-site blocks with D for pair
   blocks.
-- **Vacuum value.** The code uses 5.5 A of vacuum on each side (checked
-  here: the 4 x 4 cell is 14.13 A tall). The text descriptions in
+- **Vacuum value.** The code uses 5.5 A of vacuum on each side. I checked
+  this: the 4 x 4 cell is 14.13 A tall. The text descriptions in
   `structures.py` and `dftrun.py` say 7.5 A, which does not match the code.
 - **Values fixed inside `gen_numbers.py`.** `subgapPeak` is always written
   as 1.3. If `ml_report.json` or `ablation.json` is missing, the script
   writes built-in fallback numbers instead of stopping. Make sure both files
-  exist before trusting `data/numbers.tex`.
+  exist before you trust `data/numbers.tex`.
 - **License file.** `LICENSE` is the standard Apache 2.0 text. The
   copyright line in its appendix (line 190) is still the template
-  `Copyright [yyyy] [name of copyright owner]`, so the file names no
+  `Copyright [yyyy] [name of copyright owner]`. So the file names no
   copyright holder or year.
 - **Titles in older files.** `run_pipeline.sh` and the text written by
   `pack_zenodo.py` still carry earlier working titles of the paper. The
-  title above is the one in the latest README commit and in `pack_gamma55.py`.
+  title at the top of this guide is the one in the latest README commit and
+  in `pack_gamma55.py`.
 
 ---
 
 ## 11. Version history
 
 The repository has no tags or version numbers. All code, tests and figures
-were committed on 4 September 2026 (18 commits). A documentation update and
-a set of fixes (LaTeX files now written to `data/` instead of `paper/`;
-corrected minimum versions in `requirements.txt`), both on 30 September
-2026, followed. Details are in [CHANGELOG.md](CHANGELOG.md).
+were committed on 4 September 2026 (18 commits). Two more changes followed,
+both on 30 September 2026: a documentation update and a set of fixes. The
+fixes write the LaTeX files to `data/` instead of `paper/` and correct the
+minimum versions in `requirements.txt`. You can find the details in
+[CHANGELOG.md](CHANGELOG.md).
 
 ---
 
@@ -587,5 +594,6 @@ repository"** button in the right-hand column, which reads `CITATION.cff`.
 
 Code: Apache License 2.0 (see `LICENSE`).
 
-Questions and bug reports: please open an issue on this repository, or
-contact Tanvir M. Mahim, BRAC University (tanvir.mahim@bracu.ac.bd).
+If you have questions or find a bug, please open an issue on this
+repository, or contact me, Tanvir M. Mahim, BRAC University
+(tanvir.mahim@bracu.ac.bd).
